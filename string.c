@@ -82,7 +82,7 @@ struct StringN* Conc(struct StringN* s1, struct StringN* s2)
 struct StringN* Subs(struct StringN* s1, size_t i, size_t j)
 {
     struct StringN* s = malloc(sizeof(stringN));
-    s->dimension = abs(i-j);
+    s->dimension = abs(int(i-j));
     s->elSize = s1->elSize;
     s->symbols = malloc(elSize*(s->dimension));
     for (size_t v = 0; v < (j - i); v++)
