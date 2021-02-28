@@ -72,4 +72,4 @@ struct StringN* BijectionChar (struct StringN* s1, size_t index)
 struct StringN* RecodChar(struct StringN* s1, void* (*Bijection)(void* s2, size_t index))
 {
     return Recod(s1, void* (*BijectionChar)(void* s2, size_t index));
-};
+}
