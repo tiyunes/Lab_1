@@ -29,7 +29,7 @@ struct StringN* CreateFromValuesChar(size_t size, struct StringN* s, void* value
 
 
 void* GetNChar(size_t index, struct StringN* s)
-{;
+{
     return GetN(index, s);
 }
 
