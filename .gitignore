@@ -2,3 +2,11 @@ string_lab_1.cbp
 string_lab_1.layout
 string_char.cbp
 string_char.layout
+Lab_String.cbp
+Lab_String.depend
+Lab_String.layout
+bin/
+obj/
+string.exe
+string.o
+

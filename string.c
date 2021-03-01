@@ -2,11 +2,12 @@
 #include <stdio.h>
 #include <locale.h>
 #include <string.h>
+#include "STRINGN.H"
 
 struct StringN
 {
     size_t dimension;
-    size_t elSize
+    size_t elSize;
     void* symbols;
 };
 
@@ -30,12 +31,12 @@ struct StringN* CreateFromValues(size_t dimension, size_t elSize, void* symbols,
     struct StringN* s = malloc(sizeof(struct StringN));
     s->dimension = dimension;
     s->elSize = elSize;
-    s->symbols = malloc(elSize*size);
+    s->symbols = malloc(elSize*dimension);
     void* p0 = NULL;
     for (size_t i = 0; i < dimension; i++)
     {
         char* pos = (char*)s->symbols + i*s->elSize;
-        memcpy((void*)pos, *(values+i), s->elSize);
+        memcpy((void*)pos, *(char*)values+i*(s->elSize), (s->elSize));
     }
 }
 
@@ -49,7 +50,7 @@ void* GetN(size_t index, struct StringN* s)
 
 struct StringN* SetN(size_t index, void* value, struct StringN* s)
 {
-    *(s->symbols + index) = *value;
+    *((char*)(s->symbols) + index*(s->elSize)) = *(char*)value;
     return s;
 }
 
@@ -60,15 +61,15 @@ struct StringN* Conc(struct StringN* s1, struct StringN* s2)
     {
         struct StringN* s = malloc(sizeof(struct StringN));
         s->dimension = s1->dimension + s2->dimension;
-        s->elSize = elSize;
-        s->symbols = malloc(elSize*(s->dimension));
+        s->elSize = s1->elSize;
+        s->symbols = malloc((s->elSize)*(s->dimension));
         for (size_t i = 0; i < (s1->dimension); i++)
         {
-            setN(i, (s1 + i), s);
+            SetN(i, (s1 + i), s);
         }
         for (size_t j = 0; j < (s2->dimension); j++)
         {
-            setN((s1->dimension + j), (s2 + j), s);
+            SetN((s1->dimension + j), (s2 + j), s);
         }
         return s;
     }
@@ -81,10 +82,10 @@ struct StringN* Conc(struct StringN* s1, struct StringN* s2)
 
 struct StringN* Subs(struct StringN* s1, size_t i, size_t j)
 {
-    struct StringN* s = malloc(sizeof(stringN));
-    s->dimension = abs(int(i-j));
+    struct StringN* s = malloc(sizeof(struct StringN));
+    s->dimension = j - i;
     s->elSize = s1->elSize;
-    s->symbols = malloc(elSize*(s->dimension));
+    s->symbols = malloc((s->elSize)*(s->dimension));
     for (size_t v = 0; v < (j - i); v++)
     {
         void* el1 = GetN(i + v, s1);
@@ -95,29 +96,25 @@ struct StringN* Subs(struct StringN* s1, size_t i, size_t j)
 
 struct StringN* Bijection (struct StringN* s1, size_t index)
 {
-    struct StringN* s = malloc(sizeof(stringN));
+    struct StringN* s = malloc(sizeof(struct StringN));
     s->dimension = s1->dimension;
     s->elSize = s1->elSize;
     s->symbols = malloc((s->elSize)*(s->dimension));
-    *(s->symbols + index) = *(s1->symbols + s->dimension - index);
+    *((char*)s->symbols + s->elSize*index) = *((char*)s1->symbols + s->dimension - (s->elSize)*index);
     return s;
 };
 
-struct StringN* Recod(struct StringN* s1, void* (*Bijection)(void* s2, size_t index))
+struct StringN* Recod(struct StringN* s1, struct StringN (*Bijection)(struct StringN* s2, size_t index))
 {
-    struct StringN* s = malloc(sizeof(stringN));
+    struct StringN* s = malloc(sizeof(struct StringN));
     s->dimension = s1->dimension;
     s->elSize = s1->elSize;
     s->symbols = malloc((s->elSize)*(s->dimension));
     for (size_t i = 0; i < (s->dimension); i++)
     {
-        setN(i, Bijection(s1, i), s);
+        Bijection(s1, i);
+        SetN(i, s->symbols, s);
     }
     return s;
 }
 
-int main()
-{
-
-    return 0;
-}
