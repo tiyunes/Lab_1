@@ -1,8 +1,14 @@
 #include <stdio.h>
+#include "STRINGN.H"
 #include <stdlib.h>
+#include <string.h>
 
-int main()
+struct StringN
 {
-    printf("Hello world!\n");
-    return 0;
-}
+    size_t dimension;
+    size_t elSize;
+    void* symbols;
+};
+
+
+

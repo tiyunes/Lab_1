@@ -16,13 +16,14 @@ struct StringN* Create0(size_t size, size_t elSize, void* symbols)
     struct StringN* s = malloc(sizeof(struct StringN));
     s->dimension = size;
     s->elSize = elSize;
-    s->symbols = malloc(elSize*size);
+    s->symbols = malloc(elSize * size);
     void* p0 = NULL;
     for (size_t i = 0; i < size; i++)
     {
-        char* pos = (char*)s->symbols + i*s->elSize;
-		memcpy((void*)pos, p0, s->elSize);
+        char* position = (char*)s->symbols + i * s->elSize;
+		memcpy((void*)position, p0, s->elSize);
     }
+    return s;
 }
 
 
@@ -31,33 +32,35 @@ struct StringN* CreateFromValues(size_t dimension, size_t elSize, void* symbols,
     struct StringN* s = malloc(sizeof(struct StringN));
     s->dimension = dimension;
     s->elSize = elSize;
-    s->symbols = malloc(elSize*dimension);
-    void* p0 = NULL;
+    s->symbols = malloc(elSize * dimension);
     for (size_t i = 0; i < dimension; i++)
     {
-        char* pos = (char*)s->symbols + i*s->elSize;
-        memcpy((void*)pos, *(char*)values+i*(s->elSize), (s->elSize));
+        char* position = (char*)symbols + i * elSize;
+        char* positionValue = (char*)values + i * elSize;
+        memcpy((void*)position, (void*)positionValue, elSize);
     }
+    return s;
 }
 
 
 void* GetN(size_t index, struct StringN* s)
 {
-    void* pos = (s + index);
-    return pos;
+    char* position = (char*)(s->symbols) + index*(s->elSize);
+    return (void*)position;
 }
 
 
 struct StringN* SetN(size_t index, void* value, struct StringN* s)
 {
-    *((char*)(s->symbols) + index*(s->elSize)) = *(char*)value;
+    char* position = (char*)(s->symbols) + index*(s->elSize);
+    memcpy((void*)position, value, s->elSize);
     return s;
 }
 
 
 struct StringN* Conc(struct StringN* s1, struct StringN* s2)
 {
-    if(s1&&s2)
+    if(!NULL)
     {
         struct StringN* s = malloc(sizeof(struct StringN));
         s->dimension = s1->dimension + s2->dimension;
@@ -65,11 +68,13 @@ struct StringN* Conc(struct StringN* s1, struct StringN* s2)
         s->symbols = malloc((s->elSize)*(s->dimension));
         for (size_t i = 0; i < (s1->dimension); i++)
         {
-            SetN(i, (s1 + i), s);
+            char* position1 = (char*)(s1->symbols) + i * (s1->elSize);
+            SetN(i, (void*) position1, s);
         }
         for (size_t j = 0; j < (s2->dimension); j++)
         {
-            SetN((s1->dimension + j), (s2 + j), s);
+            char* position2 = (char*)(s2->symbols) + j * (s2->elSize);
+            SetN((s1->dimension + j), (void*) position2, s);
         }
         return s;
     }
@@ -100,20 +105,23 @@ struct StringN* Bijection (struct StringN* s1, size_t index)
     s->dimension = s1->dimension;
     s->elSize = s1->elSize;
     s->symbols = malloc((s->elSize)*(s->dimension));
-    *((char*)s->symbols + s->elSize*index) = *((char*)s1->symbols + s->dimension - (s->elSize)*index);
+    char* position = (char*)malloc(sizeof(char));
+    position = (char*)s1->symbols + (s1->dimension - index - 1)*(s1->elSize);
+    SetN(index, (void*) position, s);
     return s;
 };
 
-struct StringN* Recod(struct StringN* s1, struct StringN (*Bijection)(struct StringN* s2, size_t index))
+struct StringN* Recod(struct StringN* s1, struct StringN* (*Bijection)(struct StringN* s2, size_t index))
 {
     struct StringN* s = malloc(sizeof(struct StringN));
     s->dimension = s1->dimension;
     s->elSize = s1->elSize;
     s->symbols = malloc((s->elSize)*(s->dimension));
-    for (size_t i = 0; i < (s->dimension); i++)
+    struct StringN* s2 = malloc(sizeof(struct StringN));
+    for (size_t i = 0; i < (s->dimension) / 2; i++)
     {
-        Bijection(s1, i);
-        SetN(i, s->symbols, s);
+        s2 = Bijection(s1, i);
+        SetN(i, s2->symbols, s);
     }
     return s;
 }
