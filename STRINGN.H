@@ -7,8 +7,7 @@
 struct StringN;
 
 //I. Creating of an object
-struct StringN* Create0(size_t dimension, size_t elSize, void* symbols);
-struct StringN* CreateFromValues(size_t dimension, size_t elSize, void* symbols, void* values);
+struct StringN* CreateFromValues(size_t dimension, size_t elSize, void* values);
 
 //II. Decomposition
 void* GetN(size_t index, struct StringN* s);

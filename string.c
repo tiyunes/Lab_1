@@ -11,37 +11,6 @@ struct StringN
     void* symbols;
 };
 
-struct StringN* Create0(size_t size, size_t elSize, void* symbols)
-{
-    struct StringN* s = malloc(sizeof(struct StringN));
-    s->dimension = size;
-    s->elSize = elSize;
-    s->symbols = malloc(elSize * size);
-    void* p0 = NULL;
-    for (size_t i = 0; i < size; i++)
-    {
-        char* position = (char*)s->symbols + i * s->elSize;
-		memcpy((void*)position, p0, s->elSize);
-    }
-    return s;
-}
-
-
-struct StringN* CreateFromValues(size_t dimension, size_t elSize, void* symbols, void* values)
-{
-    struct StringN* s = malloc(sizeof(struct StringN));
-    s->dimension = dimension;
-    s->elSize = elSize;
-    s->symbols = malloc(elSize * dimension);
-    for (size_t i = 0; i < dimension; i++)
-    {
-        char* position = (char*)symbols + i * elSize;
-        char* positionValue = (char*)values + i * elSize;
-        memcpy((void*)position, (void*)positionValue, elSize);
-    }
-    return s;
-}
-
 
 void* GetN(size_t index, struct StringN* s)
 {
@@ -54,6 +23,22 @@ struct StringN* SetN(size_t index, void* value, struct StringN* s)
 {
     char* position = (char*)(s->symbols) + index*(s->elSize);
     memcpy((void*)position, value, s->elSize);
+    return s;
+}
+
+
+struct StringN* CreateFromValues(size_t dimension, size_t elSize, void* values)
+{
+    struct StringN* s = malloc(sizeof(struct StringN));
+    s->dimension = dimension;
+    s->elSize = elSize;
+    s->symbols = malloc(elSize * dimension);
+    for (size_t i = 0; i < dimension; i++)
+    {
+        char* positionValue = (char*)malloc(sizeof(char));
+        positionValue = (char*)values + i * elSize;
+        SetN(i, (void*)positionValue, s);
+    }
     return s;
 }
 
@@ -87,11 +72,11 @@ struct StringN* Conc(struct StringN* s1, struct StringN* s2)
 
 struct StringN* Subs(struct StringN* s1, size_t i, size_t j)
 {
-    struct StringN* s = malloc(sizeof(struct StringN));
-    s->dimension = j - i;
+    struct StringN* s = (struct StringN*)malloc(sizeof(struct StringN));
+    s->dimension = j - i + 1;
     s->elSize = s1->elSize;
     s->symbols = malloc((s->elSize)*(s->dimension));
-    for (size_t v = 0; v < (j - i); v++)
+    for (size_t v = 0; v <= (j - i); v++)
     {
         void* el1 = GetN(i + v, s1);
         SetN(v, el1, s->symbols);
