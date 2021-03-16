@@ -23,15 +23,31 @@ struct StringN* CreateFromValuesChar(size_t size1, size_t elSize, void* values)
 
 void* GetNChar(size_t index, struct StringN* s)
 {
-    return GetN(index, s);
+    if(index <= s->dimension - 1)
+    {
+        return GetN(index, s);
+    }
+    else
+    {
+        printf("Invalid input data. \n");
+        exit(0);
+    }
 }
 
 
 struct StringN* SetNChar (size_t index, char* value, struct StringN* s)
 {
-    void* valueVoid = malloc(sizeof(char));
-    *(char*)valueVoid = *(char*)value;
-    return SetN(index, valueVoid, s);
+    if(index <= s->dimension)
+    {
+        void* valueVoid = malloc(sizeof(char));
+        *(char*)valueVoid = *(char*)value;
+        return SetN(index, valueVoid, s);
+    }
+    else
+    {
+        printf("Invalid input data. \n");
+        exit(0);
+    }
 }
 
 
@@ -51,26 +67,42 @@ struct StringN* ConcChar(struct StringN* s1, struct StringN* s2)
 
 struct StringN* SubsChar(struct StringN* s1, size_t i, size_t j)
 {
-    struct StringN* s = (struct StringN*)malloc(sizeof(struct StringN));
-    s->dimension = j - i + 1;
-    s->elSize = s1->elSize;
-    s->symbols = (char*)malloc(s1->elSize*(s->dimension + 2));
-    for (int v = 0; v < s->dimension; ++v)
+    if(j >= i)
     {
-        SetNChar(v, (char*)GetNChar(i + v, s1), s);
+        struct StringN* s = (struct StringN*)malloc(sizeof(struct StringN));
+        s->dimension = j - i + 1;
+        s->elSize = s1->elSize;
+        s->symbols = (char*)malloc(s1->elSize*(s->dimension + 2));
+        for (int v = 0; v < s->dimension; ++v)
+        {
+            SetNChar(v, (char*)GetNChar(i + v, s1), s);
+        }
+        return s;
     }
-    return s;
+    else
+    {
+        printf("Invalid input data. \n");
+        exit(0);
+    }
 }
 
 
 struct StringN* BijectionChar (struct StringN* s1, size_t index)
 {
-    struct StringN* s = malloc(sizeof(struct StringN));
-    s->dimension = s1->dimension;
-    s->elSize = s1->elSize;
-    s->symbols = malloc((sizeof(char))*(s->dimension));
-    s = Bijection(s1, index);
-    return s;
+    if(index <= s1->dimension)
+    {
+            struct StringN* s = malloc(sizeof(struct StringN));
+            s->dimension = s1->dimension;
+            s->elSize = s1->elSize;
+            s->symbols = malloc((sizeof(char))*(s->dimension));
+            s = Bijection(s1, index);
+            return s;
+    }
+    else
+    {
+        printf("Invalid input data. \n");
+        exit(0);
+    }
 }
 
 
@@ -197,7 +229,7 @@ int main()
     printf("Write position of 2nd index: \n");
     scanf("%d", &pos2);
     struct StringN* strSub = (struct StringN*)malloc(sizeof(struct StringN));
-    strSub->dimension = pos2 - pos1 + 2;
+    strSub->dimension = pos2 - pos1 + 1;
     strSub->elSize = sizeof(char);
     strSub = SubsChar(s1, (size_t)pos1, (size_t)pos2);
     printf("Substring: %s\n", (char*)(strSub->symbols));
@@ -215,7 +247,7 @@ int main()
     printf("2nd string: %s\n", symbols2);
 
     struct StringN* s2 = (struct StringN*)malloc(sizeof(struct StringN));
-    s2->dimension = size2 + 2;
+    s2->dimension = size2;
     s2->elSize = sizeof(char);
     s2->symbols = (void*)symbols2;
     struct StringN* strConc = (struct StringN*)malloc(sizeof(struct StringN));
