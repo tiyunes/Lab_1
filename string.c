@@ -106,7 +106,12 @@ struct StringN* Recod(struct StringN* s1, struct StringN* (*Bijection)(struct St
     for (size_t i = 0; i < (s->dimension) / 2; i++)
     {
         s2 = Bijection(s1, i);
-        SetN(i, s2->symbols, s);
+        SetN(i, GetN(i, s2), s);
+    }
+    for (size_t j = s1->dimension / 2 + 1; j < (s1->dimension) / 2; j++)
+    {
+        s2 = Bijection(s1, j);
+        SetN(j, GetN(j, s2), s);
     }
     return s;
 }
