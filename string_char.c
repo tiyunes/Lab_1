@@ -195,6 +195,24 @@ void Test1()
         assert((*(char*)GetNChar(i, strSubs))==*(symbolsSubs + i * sizeof(char)));
     }
     free(strSubs);
+    //Test Recod
+    struct StringN* sTest4 = (struct StringN*)malloc(sizeof(struct StringN));
+    int sizeTest4 = 7;
+    char symbols4[] = {"Pointer"};
+    sTest4->dimension = sizeTest4;
+    sTest4->elSize = elSize;
+    sTest4->symbols = (void*)symbols4;
+    struct StringN* strBijection = (struct StringN*)malloc(sizeof(struct StringN));
+    strBijection->dimension = sizeTest1;
+    strBijection->elSize = elSize;
+    strBijection = RecodChar(sTest4, BijectionChar);
+    char symbolsRecod[] = "retnioP";
+    for (i = 0; i < 7; i++)
+    {
+        assert((*(char*)GetNChar(i, strBijection))==*(symbolsRecod + i * sizeof(char)));
+    }
+    free(strBijection);
+    free(sTest4);
     printf("Assertion1 succeed\n");
 }
 
@@ -266,6 +284,24 @@ void Test2()
         assert((*(char*)GetNChar(i, strSubs))==*(symbolsSubs + i * sizeof(char)));
     }
     free(strSubs);
+    //Test Recod
+    struct StringN* sTest4 = (struct StringN*)malloc(sizeof(struct StringN));
+    int sizeTest4 = 4;
+    char symbols4[] = {"Void"};
+    sTest4->dimension = sizeTest4;
+    sTest4->elSize = elSize;
+    sTest4->symbols = (void*)symbols4;
+    struct StringN* strBijection = (struct StringN*)malloc(sizeof(struct StringN));
+    strBijection->dimension = sizeTest1;
+    strBijection->elSize = elSize;
+    strBijection = RecodChar(sTest4, BijectionChar);
+    char symbolsRecod[] = "dioV";
+    for (i = 0; i < 4; i++)
+    {
+        assert((*(char*)GetNChar(i, strBijection))==*(symbolsRecod + i * sizeof(char)));
+    }
+    free(strBijection);
+    free(sTest4);
     printf("Assertion2 succeed\n");
 }
 
@@ -337,6 +373,24 @@ void Test3()
         assert((*(char*)GetNChar(i, strSubs))==*(symbolsSubs + i * sizeof(char)));
     }
     free(strSubs);
+    //Test Recod
+    struct StringN* sTest4 = (struct StringN*)malloc(sizeof(struct StringN));
+    int sizeTest4 = 4;
+    char symbols4[] = {"Book"};
+    sTest4->dimension = sizeTest4;
+    sTest4->elSize = elSize;
+    sTest4->symbols = (void*)symbols4;
+    struct StringN* strBijection = (struct StringN*)malloc(sizeof(struct StringN));
+    strBijection->dimension = sizeTest1;
+    strBijection->elSize = elSize;
+    strBijection = RecodChar(sTest4, BijectionChar);
+    char symbolsRecod[] = "kooB";
+    for (i = 0; i < 4; i++)
+    {
+        assert((*(char*)GetNChar(i, strBijection))==*(symbolsRecod + i * sizeof(char)));
+    }
+    free(strBijection);
+    free(sTest4);
     printf("Assertion3 succeed\n");
 }
 
@@ -382,25 +436,25 @@ int main()
     strConc->dimension = size + size2;
     strConc->elSize = sizeof(char);
     strConc = ConcChar(s1, s2);
-    printf("Concatenation of 1st (changed )and 2nd strings: %s\n", ((char*)(strConc->symbols)));
+    printf("Concatenation of 1st (changed) and 2nd strings: %s\n", ((char*)(strConc->symbols)));
     free(s2);
     free(strConc);
 
     size_t pos1;
-    printf("Write position of 1st index of 1st string: \n");
+    printf("Write position of 1st index of 1st string (changed): \n");
     scanf("%d%*c", &pos1);
     size_t pos2;
-    printf("Write position of 2nd index of 1st string: \n");
+    printf("Write position of 2nd index of 1st string (changed): \n");
     scanf("%d%*c", &pos2);
     struct StringN* strSub = (struct StringN*)malloc(sizeof(struct StringN));
     strSub->dimension = pos2 - pos1 + 1;
     strSub->elSize = sizeof(char);
     strSub = SubsChar(s1, (size_t)pos1, (size_t)pos2);
-    printf("Substring of 1st string: %s\n", (char*)(strSub->symbols));
+    printf("Substring of 1st string (changed): %s\n", (char*)(strSub->symbols));
     free(strSub);
 
     int size3;
-    printf("Write length of 3rd string: \n");
+    printf("Write length of 3rd string for recoding: \n");
     scanf("%d%*c", &size3);
     char symbols3[size3 + 1];
     printf("Write symbols of 3rd string: \n");
