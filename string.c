@@ -79,7 +79,7 @@ struct StringN* Subs(struct StringN* s1, size_t i, size_t j)
     for (size_t v = 0; v <= (j - i); v++)
     {
         void* el1 = GetN(i + v, s1);
-        SetN(v, el1, s->symbols);
+        SetN(v, el1, s);
     }
     return s;
 }
@@ -103,12 +103,15 @@ struct StringN* Recod(struct StringN* s1, struct StringN* (*Bijection)(struct St
     s->elSize = s1->elSize;
     s->symbols = malloc((s->elSize)*(s->dimension));
     struct StringN* s2 = malloc(sizeof(struct StringN));
-    for (size_t i = 0; i < (s->dimension) / 2; i++)
+    s2->dimension = s1->dimension;
+    s2->elSize = s1->elSize;
+    s2->symbols = malloc((s1->elSize)*(s1->dimension));
+    for (size_t i = 0; i <= (s1->dimension) / 2; i++)
     {
         s2 = Bijection(s1, i);
         SetN(i, GetN(i, s2), s);
     }
-    for (size_t j = s1->dimension / 2 + 1; j < (s1->dimension) / 2; j++)
+    for (size_t j = s1->dimension / 2 + 1; j <= (s1->dimension); j++)
     {
         s2 = Bijection(s1, j);
         SetN(j, GetN(j, s2), s);

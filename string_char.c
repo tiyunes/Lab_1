@@ -16,7 +16,10 @@ struct StringN* CreateFromValuesChar(size_t size1, size_t elSize, void* values)
 {
    if(size1 != 0)
    {
-        return CreateFromValues(size1, elSize, values);
+       struct StringN* s = (struct StringN*)malloc(sizeof(struct StringN));
+       s = CreateFromValues(size1, elSize, values);
+       *(char*)GetNChar(size1, s) = '\0';
+       return s;
    }
 }
 
@@ -54,13 +57,10 @@ struct StringN* SetNChar (size_t index, char* value, struct StringN* s)
 struct StringN* ConcChar(struct StringN* s1, struct StringN* s2)
 {
     struct StringN* s = (struct StringN*)malloc(sizeof(struct StringN));
-    char* symbolsChar1 = (char*)(malloc((s1->dimension + s2->dimension)*sizeof(char)));
-    char* symbolsChar2 = (char*)(malloc((s2->dimension)*sizeof(char)));
-    symbolsChar1 = (char*)(s1->symbols);
-    symbolsChar2 = (char*)(s2->symbols);
-    s->symbols = (void*)strcat(symbolsChar1, symbolsChar2);
     s->dimension = s1->dimension + s2->dimension;
     s->elSize = s1->elSize;
+    s = Conc(s1, s2);
+    *(char*)GetNChar(s->dimension, s) = '\0';
     return s;
 }
 
@@ -69,12 +69,12 @@ struct StringN* SubsChar(struct StringN* s1, size_t i, size_t j)
 {
     if(j >= i && j <= s1->dimension)
     {
-        for (int v = 0; v < (j - i+ 1); ++v)
-        {
-            memcpy(GetNChar(v, s1), GetNChar(i+v, s1), s1->elSize);
-        }
-        *(char*)GetNChar(j - i + 1, s1) = '\0';
-        return s1;
+        struct StringN* s = (struct StringN*)malloc(sizeof(struct StringN));
+        s->dimension = j - i + 1;
+        s->elSize = s1->elSize;
+        s = Subs(s1, i, j);
+        *(char*)GetNChar(j - i + 1, s) = '\0';
+        return s;
     }
     else
     {
@@ -105,24 +105,11 @@ struct StringN* BijectionChar (struct StringN* s1, size_t index)
 
 struct StringN* RecodChar(struct StringN* s1, struct StringN* (*BijectionChar)(struct StringN*, size_t))
 {
-    struct StringN* s = (struct StringN*)malloc(sizeof(struct StringN));
-    s->dimension = s1->dimension;
-    s->elSize = s1->elSize;
-    s->symbols = malloc((sizeof(char))*(s->dimension));
     struct StringN* s2 = (struct StringN*)malloc(sizeof(struct StringN));
     s2->dimension = s1->dimension;
     s2->elSize = s1->elSize;
-    s2->symbols = malloc((sizeof(char))*(s->dimension));
-    for (size_t index = 0; index <= s1->dimension / 2; index++)
-    {
-        s = BijectionChar(s1, index);
-        SetNChar(index, (char*)s->symbols + index * (s1->elSize), s2);
-    }
-    for (size_t index1 = s1->dimension / 2 + 1; index1 <= s1->dimension; index1++)
-    {
-        s = BijectionChar(s1, index1);
-        SetNChar(index1, (char*)s->symbols + index1 * (s1->elSize), s2);
-    }
+    s2->symbols = malloc((sizeof(char))*(s1->dimension));
+    s2 = Recod(s1, BijectionChar);
     *(char*)GetNChar(s2->dimension, s2) = '\0';
     return s2;
 }
@@ -132,14 +119,14 @@ void Test1()
     int i;
     //Creating 1st test string
     struct StringN* sTest1 = (struct StringN*)malloc(sizeof(struct StringN));
-    int sizeTest1 = 9;
+    int sizeTest1 = 7;
     int elSize = sizeof(char);
-    char symbols1[9] = {"Pointer"};
+    char symbols1[] = {"Pointer"};
     sTest1->dimension = sizeTest1;
     sTest1->elSize = elSize;
     sTest1->symbols = (void*)symbols1;
     //Test CreateFromValues
-    char symBuf[9] = {"Pointer"};
+    char symBuf[] = {"Pointer"};
     struct StringN* sBuf = (struct StringN*)malloc(sizeof(struct StringN));
     sBuf->dimension = sizeTest1;
     sBuf->elSize = elSize;
@@ -149,8 +136,8 @@ void Test1()
         assert((*(char*)GetNChar(i, sBuf))==*(symBuf + i * sizeof(char)));
     }
     //Test Conc
-    int sizeTest2 = 6;
-    char symbols2[6] = {"Name"};
+    int sizeTest2 = 4;
+    char symbols2[] = "Name";
     struct StringN* sTest2 = (struct StringN*)malloc(sizeof(struct StringN));
     sTest2->dimension = sizeTest2;
     sTest2->elSize = elSize;
@@ -163,7 +150,7 @@ void Test1()
     strConc->dimension = sizeTest1 + sizeTest2;
     strConc->elSize = elSize;
     strConc = ConcChar(sTest1, sTestT);
-    char symbolsConc[13] = {"PointerName"};
+    char symbolsConc[12] = {"PointerName"};
     for (i = 0; i < 11; i++)
     {
         assert((*(char*)GetNChar(i, strConc))==*(symbolsConc + i * sizeof(char)));
@@ -221,7 +208,7 @@ void Test2()
     int i;
     //Creating 1st test string
     struct StringN* sTest1 = (struct StringN*)malloc(sizeof(struct StringN));
-    int sizeTest1 = 5;
+    int sizeTest1 = 4;
     int elSize = sizeof(char);
     char symbols1[] = {"Void"};
     sTest1->dimension = sizeTest1;
@@ -238,7 +225,7 @@ void Test2()
         assert((*(char*)GetNChar(i, sBuf))==*(symBuf + i * sizeof(char)));
     }
     //Test Conc
-    int sizeTest2 = 9;
+    int sizeTest2 = 8;
     char symbols2[] = {"Function"};
     struct StringN* sTest2 = (struct StringN*)malloc(sizeof(struct StringN));
     sTest2->dimension = sizeTest2;
@@ -310,7 +297,7 @@ void Test3()
     int i;
     //Creating 1st test string
     struct StringN* sTest1 = (struct StringN*)malloc(sizeof(struct StringN));
-    int sizeTest1 = 5;
+    int sizeTest1 = 4;
     int elSize = sizeof(char);
     char symbols1[] = {"Book"};
     sTest1->dimension = sizeTest1;
@@ -327,7 +314,7 @@ void Test3()
         assert((*(char*)GetNChar(i, sBuf))==*(symBuf + i * sizeof(char)));
     }
     //Test Conc
-    int sizeTest2 = 9;
+    int sizeTest2 = 8;
     char symbols2[] = {"Integral"};
     struct StringN* sTest2 = (struct StringN*)malloc(sizeof(struct StringN));
     sTest2->dimension = sizeTest2;
